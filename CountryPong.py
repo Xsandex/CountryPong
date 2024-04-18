@@ -3,13 +3,13 @@ from pygame import *
 
 window = display.set_mode((500,500))
 
-background = transform.scale(image.load(r"C:\Users\STAS\OneDrive\Рабочий стол\CountryPong-main\sad.jpg"),(500,500))
+background = transform.scale(image.load('sad.jpg'),(500,500))
 
 
 events = event.get()
 events[0].type
 clock = time.Clock()
-germany = transform.scale(image.load(r'C:\Users\STAS\OneDrive\Рабочий стол\CountryPong-main\Gremany.png'),(10,200))
+#germany = transform.scale(image.load('Gremany.png'),(10,200))
 game = True
 class GameSprite(sprite.Sprite):
  #конструктор класса
@@ -31,17 +31,13 @@ class GameSprite(sprite.Sprite):
    def reset(self):
        window.blit(self.image, (self.rect.x, self.rect.y))
 
-class Ball(GameSprite):
-    def move():
-        if sprite.collide_rect(player_1,Ball):
-            self.rect.x -= self.speed
-            self.rect.y -= self.speed
-        if sprite.collide_rect(player_2,Ball):
-            self.rect.x += self.speed
-            self.rect.y += self.speed
+
+
+            
+
 class player_1(GameSprite):
     
-    def control():
+    def control(self):
         keys_pressed = key.get_pressed()
         if keys_pressed[K_w] and self.rect.y > 5:
             self.rect.y -= self.speed 
@@ -49,17 +45,35 @@ class player_1(GameSprite):
             self.rect.y += self.speed
 class player_2(GameSprite):
     
-    def control():
+    def control(self):
         keys_pressed = key.get_pressed()
-        if keys_pressed[KEY_UP] and self.rect.y > 5:
+        if keys_pressed[K_UP] and self.rect.y > 5:
             self.rect.y -= self.speed 
-        if keys_pressed[KEY_DOWN] and self.rect.y < 415:
+        if keys_pressed[K_DOWN] and self.rect.y < 415:
             self.rect.y += self.speed
     
-
-Germany = player_1(r'C:\Users\STAS\OneDrive\Рабочий стол\CountryPong-main\Gremany.png',25,250,10,100,5)
-USSR = player_2(r'C:\Users\STAS\OneDrive\Рабочий стол\CountryPong-main\USSR.png',470,250,10,100,5)
-Poland = Ball(r'C:\Users\STAS\OneDrive\Рабочий стол\CountryPong-main\POLAND.png',250,250,10,10,5)
+class Ball(GameSprite):
+    def __init__(self,ball_image,player_x, player_y, size_x, size_y,speed_x):
+        super().__init__(ball_image,player_x, player_y, size_x, size_y,speed_x)
+        self.speed_x = speed_x
+        self.speed_y = speed_x
+    def move(self,player_1,player_2):
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+        if sprite.collide_rect(player_1,self) or sprite.collide_rect(player_2,self):
+            self.speed_x *= -1
+        if self.rect.y == 400:
+            self.speed_y *= -1
+        if self.rect.y == 0:
+            self.speed_y *= -1
+        if self.rect.x == 0:
+            self.speed_x *= -1
+        if self.rect.x == 400:
+            self.speed_x *= -1
+        
+Germany = player_1('Gremany.png',25,250,10,100,5)
+USSR = player_2('USSR.png',470,250,10,100,5)
+Poland = Ball('POLAND.png',100,100,100,100,4)
 
 while game:
     window.blit(background,(0,0))
@@ -67,7 +81,18 @@ while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
-    window.blit(germany,(10,100))
+    # if keys_pressed [K_a]:
+    #     Poland.move(Germany,USSR)
+    #     Poland.reset()
+    Poland.move(Germany,USSR)
+    Poland.reset()
+
+    Germany.control()
+    Germany.reset()
+
+    USSR.control()
+    USSR.reset()
+
     display.update()
-clock.tick(60)
-     
+    clock.tick(60)
+
