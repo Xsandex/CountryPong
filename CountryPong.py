@@ -57,23 +57,28 @@ class Ball(GameSprite):
         super().__init__(ball_image,player_x, player_y, size_x, size_y,speed_x)
         self.speed_x = speed_x
         self.speed_y = speed_x
-    def move(self,player_1,player_2):
+    def update(self):
+        global Germany
+        global USSR
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
-        if sprite.collide_rect(player_1,self) or sprite.collide_rect(player_2,self):
+        if sprite.collide_rect(Germany,self) or sprite.collide_rect(USSR,self):
             self.speed_x *= -1
-        if self.rect.y == 400:
+        if self.rect.y >= 490:
             self.speed_y *= -1
-        if self.rect.y == 0:
+        if self.rect.y <= 0:
             self.speed_y *= -1
-        if self.rect.x == 0:
+        if self.rect.x <= 0:
             self.speed_x *= -1
-        if self.rect.x == 400:
+        if self.rect.x >= 490:
             self.speed_x *= -1
         
 Germany = player_1('Gremany.png',25,250,10,100,5)
 USSR = player_2('USSR.png',470,250,10,100,5)
-Poland = Ball('POLAND.png',100,100,100,100,4)
+Poland = Ball('POLAND.png',10,10,10,10,4)
+
+group = sprite.Group()
+group.add(Poland)
 
 while game:
     window.blit(background,(0,0))
@@ -81,11 +86,15 @@ while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
-    # if keys_pressed [K_a]:
-    #     Poland.move(Germany,USSR)
-    #     Poland.reset()
-    Poland.move(Germany,USSR)
-    Poland.reset()
+        if e.type == KEYDOWN:
+            if e.key == K_a:
+                poland = Ball('POLAND.png',Poland.rect.x,Poland.rect.y,10,10,4)
+                group.add(poland)
+
+    group.update()
+                
+    # Poland.move(Germany,USSR)
+    group.draw(window)
 
     Germany.control()
     Germany.reset()
@@ -95,4 +104,3 @@ while game:
 
     display.update()
     clock.tick(60)
-
